@@ -1,93 +1,93 @@
-import { match } from "ts-pattern"
+import { match } from 'ts-pattern';
 
 export type Redaction = {
-  key: string
-  x: number
-  y: number
-  width: number
-  height: number
+  key: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
   // As part of Solid granular reactivity we add these properties to track the state
   // of the mouse position when dragging or resizing the redaction
-  currentPosition: { x: number; y: number } | null
-  isDragging: boolean
-  isResizing: boolean
-  isSelected: boolean
-}
+  currentPosition: { x: number; y: number } | null;
+  isDragging: boolean;
+  isResizing: boolean;
+  isSelected: boolean;
+};
 
 export type VideoState = {
-  videoSrc: string | null
-  videoPath: string | null
-  previewMode: boolean
-  redactions: Redaction[]
-}
+  videoSrc: string | null;
+  videoPath: string | null;
+  previewMode: boolean;
+  redactions: Array<Redaction>;
+};
 
 export enum Actions {
-  TogglePreviewMode = "TOGGLE_PREVIEW_MODE",
-  SetVideoSrc = "SET_VIDEO_SRC",
-  AddRedaction = "ADD_REDACTION",
-  StartDragRedaction = "START_DRAG_REDACTION",
-  StopDragRedaction = "STOP_DRAG_REDACTION",
-  DragRedaction = "DRAG_REDACTION",
-  StartResizeRedaction = "START_RESIZE_REDACTION",
-  StopResizeRedaction = "STOP_RESIZE_REDACTION",
-  ResizeRedaction = "RESIZE_REDACTION",
-  MouseLeave = "MOUSE_LEAVE",
+  TogglePreviewMode = 'TOGGLE_PREVIEW_MODE',
+  SetVideoSrc = 'SET_VIDEO_SRC',
+  AddRedaction = 'ADD_REDACTION',
+  StartDragRedaction = 'START_DRAG_REDACTION',
+  StopDragRedaction = 'STOP_DRAG_REDACTION',
+  DragRedaction = 'DRAG_REDACTION',
+  StartResizeRedaction = 'START_RESIZE_REDACTION',
+  StopResizeRedaction = 'STOP_RESIZE_REDACTION',
+  ResizeRedaction = 'RESIZE_REDACTION',
+  MouseLeave = 'MOUSE_LEAVE',
 }
 
 export type VideoAction =
   | {
-      type: Actions.TogglePreviewMode
+      type: Actions.TogglePreviewMode;
     }
   | {
-      type: Actions.SetVideoSrc
-      payload: string
+      type: Actions.SetVideoSrc;
+      payload: string;
     }
   | {
-      type: Actions.AddRedaction
+      type: Actions.AddRedaction;
     }
   | {
-      type: Actions.StartDragRedaction
+      type: Actions.StartDragRedaction;
       payload: {
-        key: string
-        newPosition: { x: number; y: number }
-      }
+        key: string;
+        newPosition: { x: number; y: number };
+      };
     }
   | {
-      type: Actions.StopDragRedaction
-      payload: string // redaction key
+      type: Actions.StopDragRedaction;
+      payload: string; // redaction key
     }
   | {
-      type: Actions.DragRedaction
+      type: Actions.DragRedaction;
       payload: {
-        key: string
-        x: number
-        y: number
-        newPosition: { x: number; y: number }
-      }
+        key: string;
+        x: number;
+        y: number;
+        newPosition: { x: number; y: number };
+      };
     }
   | {
-      type: Actions.StartResizeRedaction
+      type: Actions.StartResizeRedaction;
       payload: {
-        key: string
-        newPosition: { x: number; y: number }
-      }
+        key: string;
+        newPosition: { x: number; y: number };
+      };
     }
   | {
-      type: Actions.StopResizeRedaction
-      payload: string // redaction key
+      type: Actions.StopResizeRedaction;
+      payload: string; // redaction key
     }
   | {
-      type: Actions.ResizeRedaction
+      type: Actions.ResizeRedaction;
       payload: {
-        key: string
-        width: number
-        height: number
-        newPosition: { x: number; y: number }
-      }
+        key: string;
+        width: number;
+        height: number;
+        newPosition: { x: number; y: number };
+      };
     }
   | {
-      type: Actions.MouseLeave
-    }
+      type: Actions.MouseLeave;
+    };
 
 export const reducer = (state: VideoState, action: VideoAction): VideoState =>
   match(action)
@@ -119,7 +119,7 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
     }))
     .with({ type: Actions.StartDragRedaction }, ({ payload }) => ({
       ...state,
-      redactions: state.redactions.map((r) =>
+      redactions: state.redactions.map(r =>
         r.key === payload.key
           ? {
               ...r,
@@ -132,12 +132,12 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
               isSelected: false,
               currentPosition: null,
               isDragging: false,
-            },
+            }
       ),
     }))
     .with({ type: Actions.StopDragRedaction }, ({ payload }) => ({
       ...state,
-      redactions: state.redactions.map((r) =>
+      redactions: state.redactions.map(r =>
         r.key === payload
           ? {
               ...r,
@@ -145,12 +145,12 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
               isSelected: false,
               currentPosition: null,
             }
-          : r,
+          : r
       ),
     }))
     .with({ type: Actions.DragRedaction }, ({ payload }) => ({
       ...state,
-      redactions: state.redactions.map((r) =>
+      redactions: state.redactions.map(r =>
         r.key === payload.key
           ? {
               ...r,
@@ -158,12 +158,12 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
               y: payload.y,
               currentPosition: payload.newPosition,
             }
-          : r,
+          : r
       ),
     }))
     .with({ type: Actions.StartResizeRedaction }, ({ payload }) => ({
       ...state,
-      redactions: state.redactions.map((r) =>
+      redactions: state.redactions.map(r =>
         r.key === payload.key
           ? {
               ...r,
@@ -176,12 +176,12 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
               isSelected: false,
               currentPosition: null,
               isResizing: false,
-            },
+            }
       ),
     }))
     .with({ type: Actions.StopResizeRedaction }, ({ payload }) => ({
       ...state,
-      redactions: state.redactions.map((r) =>
+      redactions: state.redactions.map(r =>
         r.key === payload
           ? {
               ...r,
@@ -189,12 +189,12 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
               isSelected: false,
               currentPosition: null,
             }
-          : r,
+          : r
       ),
     }))
     .with({ type: Actions.ResizeRedaction }, ({ payload }) => ({
       ...state,
-      redactions: state.redactions.map((r) =>
+      redactions: state.redactions.map(r =>
         r.key === payload.key
           ? {
               ...r,
@@ -202,12 +202,12 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
               height: payload.height,
               currentPosition: payload.newPosition,
             }
-          : r,
+          : r
       ),
     }))
     .with({ type: Actions.MouseLeave }, () => ({
       ...state,
-      redactions: state.redactions.map((r) => ({
+      redactions: state.redactions.map(r => ({
         ...r,
         isDragging: false,
         isResizing: false,
@@ -215,4 +215,4 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
         currentPosition: null,
       })),
     }))
-    .exhaustive()
+    .exhaustive();
