@@ -40,18 +40,24 @@ const VideoEditor: Component = () => {
     dispatch({ type: Actions.MouseLeave });
   };
 
+  const startPlaying = (): void => {
+    setIsPlaying(true);
+  };
+  const stopPlaying = (): void => {
+    setIsPlaying(false);
+  };
   createEffect(() => {
     if (videoRef) {
-      videoRef.addEventListener('play', () => setIsPlaying(true));
-      videoRef.addEventListener('pause', () => setIsPlaying(false));
-      videoRef.addEventListener('ended', () => setIsPlaying(false));
+      videoRef.addEventListener('play', startPlaying);
+      videoRef.addEventListener('pause', stopPlaying);
+      videoRef.addEventListener('ended', stopPlaying);
     }
     window.addEventListener('mouseleave', onMouseLeave);
     onCleanup(() => {
       if (videoRef) {
-        videoRef.removeEventListener('play', () => setIsPlaying(true));
-        videoRef.removeEventListener('pause', () => setIsPlaying(false));
-        videoRef.removeEventListener('ended', () => setIsPlaying(false));
+        videoRef.removeEventListener('play', startPlaying);
+        videoRef.removeEventListener('pause', stopPlaying);
+        videoRef.removeEventListener('ended', stopPlaying);
       }
       window.removeEventListener('mouseleave', onMouseLeave);
     });
