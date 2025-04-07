@@ -48,7 +48,9 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@ffmpeg-installer/darwin-x64",
       "@ffmpeg-installer/linux-x64",
+      "@ffmpeg-installer/win32-x64",
       "electron",
       "esbuild"
     ]
