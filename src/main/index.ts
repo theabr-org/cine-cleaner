@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, shell, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'node:path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
 import icon from '../../resources/icon.png?asset';
@@ -10,6 +10,8 @@ function createWindow(): void {
   const mainWindow = new BrowserWindow({
     width: 900,
     height: 670,
+    autoHideMenuBar: true,
+    show: false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -26,25 +28,6 @@ function createWindow(): void {
     shell.openExternal(details.url);
     return { action: 'deny' };
   });
-
-  const menu = Menu.buildFromTemplate([
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'Open Video',
-          click: selectVideo,
-        },
-
-        { type: 'separator' },
-        {
-          role: 'quit',
-        },
-      ],
-    },
-  ]);
-
-  Menu.setApplicationMenu(menu);
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
