@@ -1,10 +1,10 @@
 {
   "name": "cine-cleaner",
   "version": "1.0.0",
-  "description": "An Electron application with Solid and TypeScript",
+  "description": "An application to add redactions to videos.",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://electron-vite.org",
+  "author": "The ABR",
+  "homepage": "https://github.com/theabr-org/cine-cleaner",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint --cache .",
@@ -48,7 +48,9 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@ffmpeg-installer/darwin-x64",
       "@ffmpeg-installer/linux-x64",
+      "@ffmpeg-installer/win32-x64",
       "electron",
       "esbuild"
     ]
