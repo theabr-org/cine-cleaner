@@ -52,13 +52,13 @@ export const exportVideo: Parameters<typeof ipcMain.handle>[1] = async (
     // https://github.com/kribblo/node-ffmpeg-installer/blob/master/README.md#wrong-path-under-electron-with-asar-enabled
     ffmpeg.path.replace('app.asar', 'app.asar.unpacked'),
     '-i', // input file
-    inputPath,
+    `"${inputPath}"`, // Use double quotes to handle spaces in path
     '-vf', // video filter
     `"${videoFilter}"`, // Use double quotes to handle spaces in filter
     '-c:a', // copy audio codec
     'copy',
     '-y', // Overwrite output file if it exists
-    outputPath,
+    `"${outputPath}"`, // Use double quotes to handle spaces in path
   ];
 
   return new Promise((resolve, reject) => {
