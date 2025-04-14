@@ -1,6 +1,6 @@
 {
   "name": "cine-cleaner",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An application to add redactions to videos.",
   "main": "./out/main/index.js",
   "author": "The ABR",
