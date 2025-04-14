@@ -17,6 +17,10 @@ export type Redaction = {
 export type VideoState = {
   videoSrc: string | null;
   videoPath: string | null;
+  videoDimensions: {
+    width: number;
+    height: number;
+  } | null;
   previewMode: boolean;
   redactions: Array<Redaction>;
 };
@@ -32,6 +36,8 @@ export enum Actions {
   StopResizeRedaction = 'STOP_RESIZE_REDACTION',
   ResizeRedaction = 'RESIZE_REDACTION',
   MouseLeave = 'MOUSE_LEAVE',
+  ResizeVideo = 'RESIZE_VIDEO',
+  SetVideoDimensions = 'SET_VIDEO_DIMENSIONS',
 }
 
 export type VideoAction =
@@ -87,6 +93,20 @@ export type VideoAction =
     }
   | {
       type: Actions.MouseLeave;
+    }
+  | {
+      type: Actions.ResizeVideo;
+      payload: {
+        width: number;
+        height: number;
+      };
+    }
+  | {
+      type: Actions.SetVideoDimensions;
+      payload: {
+        width: number;
+        height: number;
+      };
     };
 
 export const reducer = (state: VideoState, action: VideoAction): VideoState =>
@@ -214,5 +234,37 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
         isSelected: false,
         currentPosition: null,
       })),
+    }))
+    .with({ type: Actions.ResizeVideo }, ({ payload }) => {
+      const videoDimensions = state.videoDimensions;
+      if (!videoDimensions) {
+        return state;
+      }
+      const { height, width } = videoDimensions;
+      const heightRatio = payload.height / height;
+      const widthRatio = payload.width / width;
+
+      const nextRedactions = state.redactions.map(r => ({
+        ...r,
+        x: r.x * widthRatio,
+        y: r.y * heightRatio,
+        width: r.width * widthRatio,
+        height: r.height * heightRatio,
+      }));
+      return {
+        ...state,
+        videoDimensions: {
+          width: payload.width,
+          height: payload.height,
+        },
+        redactions: nextRedactions,
+      };
+    })
+    .with({ type: Actions.SetVideoDimensions }, ({ payload }) => ({
+      ...state,
+      videoDimensions: {
+        width: payload.width,
+        height: payload.height,
+      },
     }))
     .exhaustive();

@@ -1,6 +1,6 @@
 {
   "name": "cine-cleaner",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "An application to add redactions to videos.",
   "main": "./out/main/index.js",
   "author": "The ABR",
@@ -24,6 +24,7 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^4.0.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
+    "@solid-primitives/resize-observer": "^2.1.0",
     "electron-updater": "^6.3.9",
     "lucide-solid": "^0.487.0",
     "tailwindcss": "^4.1.1",

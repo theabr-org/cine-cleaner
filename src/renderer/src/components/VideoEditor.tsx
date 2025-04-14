@@ -1,67 +1,18 @@
-import {
-  createSignal,
-  Show,
-  Component,
-  For,
-  createEffect,
-  onCleanup,
-} from 'solid-js';
-import { Redaction } from './Redaction';
-import { Pause, Play, Upload } from 'lucide-solid';
-import { RedactionMover } from './RedactionMover';
-import { RedactionResizer } from './RedactionResizer';
-import { ExportVideoButton } from './ExportVideoButton';
+import { Show, Component } from 'solid-js';
+import { Upload } from 'lucide-solid';
+
 import { useVideoData } from '@renderer/context/useVideoData';
 import { Actions } from '@renderer/store';
+import { Video } from './Video';
 
 const VideoEditor: Component = () => {
-  const [isPlaying, setIsPlaying] = createSignal(false);
   const [videoState, dispatch] = useVideoData();
 
-  let videoRef!: HTMLVideoElement;
-
   const handleFileUpload = async (): Promise<void> => {
-    console.log('handleFileUpload');
     const filePath = await window.api.selectVideo(); // Call Electron API
     if (!filePath) return;
     dispatch({ type: Actions.SetVideoSrc, payload: filePath });
   };
-
-  const togglePlay = (): void => {
-    if (isPlaying()) {
-      videoRef.pause();
-    } else {
-      videoRef.play();
-    }
-    setIsPlaying(!isPlaying());
-  };
-
-  const onMouseLeave = (): void => {
-    dispatch({ type: Actions.MouseLeave });
-  };
-
-  const startPlaying = (): void => {
-    setIsPlaying(true);
-  };
-  const stopPlaying = (): void => {
-    setIsPlaying(false);
-  };
-  createEffect(() => {
-    if (videoRef) {
-      videoRef.addEventListener('play', startPlaying);
-      videoRef.addEventListener('pause', stopPlaying);
-      videoRef.addEventListener('ended', stopPlaying);
-    }
-    window.addEventListener('mouseleave', onMouseLeave);
-    onCleanup(() => {
-      if (videoRef) {
-        videoRef.removeEventListener('play', startPlaying);
-        videoRef.removeEventListener('pause', stopPlaying);
-        videoRef.removeEventListener('ended', stopPlaying);
-      }
-      window.removeEventListener('mouseleave', onMouseLeave);
-    });
-  });
 
   return (
     <div class="h-screen bg-slate-100 flex flex-col items-center justify-center p-8">
@@ -101,62 +52,7 @@ const VideoEditor: Component = () => {
             </>
           }
         >
-          <div
-            onMouseLeave={onMouseLeave}
-            class="flex-1 relative min-h-0 max-h-full h-full"
-          >
-            <video
-              ref={videoRef!}
-              class="pointer-events-none h-auto max-h-full"
-            >
-              <source src={videoState.videoSrc!} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-            <div
-              class="absolute top-0 left-0"
-              style={{
-                width: videoRef.clientWidth + 'px',
-                height: videoRef.clientHeight + 'px',
-              }}
-            >
-              <For each={videoState.redactions}>
-                {redaction => (
-                  <Redaction redaction={redaction}>
-                    <Show when={!videoState.previewMode}>
-                      <RedactionMover
-                        redaction={redaction}
-                        maxCoords={{
-                          x: videoRef.clientWidth,
-                          y: videoRef.clientHeight,
-                        }}
-                      />
-                      <RedactionResizer redaction={redaction} />
-                    </Show>
-                  </Redaction>
-                )}
-              </For>
-            </div>
-          </div>
-          <div class="flex flex-0 justify-between items-center gap-4">
-            <button
-              class="px-4 py-2 bg-blue-500 w-[105px] text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-              onClick={togglePlay}
-            >
-              {isPlaying() ? (
-                <Pause class="w-4 h-4" />
-              ) : (
-                <Play class="w-4 h-4" />
-              )}
-              {isPlaying() ? 'Pause' : 'Play'}
-            </button>
-            <button
-              class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
-              onClick={() => dispatch({ type: Actions.AddRedaction })}
-            >
-              Add Redaction
-            </button>
-            <ExportVideoButton videoRef={videoRef} />
-          </div>
+          <Video />
         </Show>
       </div>
     </div>

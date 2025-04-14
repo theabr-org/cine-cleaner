@@ -17,6 +17,9 @@ importers:
       '@ffmpeg-installer/ffmpeg':
         specifier: ^1.1.0
         version: 1.1.0
+      '@solid-primitives/resize-observer':
+        specifier: ^2.1.0
+        version: 2.1.0(solid-js@1.9.5)
       electron-updater:
         specifier: ^6.3.9
         version: 6.6.2
@@ -649,6 +652,31 @@ packages:
   '@sindresorhus/is@4.6.0':
     resolution: {integrity: sha512-t09vSN3MdfsyCHoFcTRCH/iUtG7OJ0CsjzB8cjAmKc/va/kIgeDI/TxsigdncE/4be734m0cvIYwNaV4i2XqAw==}
     engines: {node: '>=10'}
+
+  '@solid-primitives/event-listener@2.4.0':
+    resolution: {integrity: sha512-TSfR1PNTfojFEYGSxSMCnUhXsaYWBo4p+cm73QmWODa9YnaQAk6PB7VjzG2bOT2D817VlvuOqTj0Qdq+MZrdGg==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  '@solid-primitives/resize-observer@2.1.0':
+    resolution: {integrity: sha512-tO9MDAc2pNjpcRd5B8LWbiR1qzIgvGZ5BtTuO98N7CLwd+fnuyGwtlQtJpz5hcLcTnoawpQYLpiRGNgaYW+YzQ==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  '@solid-primitives/rootless@1.5.0':
+    resolution: {integrity: sha512-YJ+EveQeDv9DLqfDKfsPAAGy2x3vBruoD23yn+nD2dT84QjoBxWT1T0qA0TMFjek6/xuN3flqnHtQ4r++4zdjg==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  '@solid-primitives/static-store@0.1.0':
+    resolution: {integrity: sha512-6Coau0Kv/dF83UQpbBzc+gnJafOQAPe2jCbB4jmTK5UocsR5cWmFBVRm3kin+nZFVaO4WkuELw0cKANWgTVh8Q==}
+    peerDependencies:
+      solid-js: ^1.6.12
+
+  '@solid-primitives/utils@6.3.0':
+    resolution: {integrity: sha512-e7hTlJ1Ywh2+g/Qug+n4L1mpfxsikoIS4/sHE2EK9WatQt8UJqop/vE6bsLnXlU1xuhb/jo94Ah5Y27rd4wP7A==}
+    peerDependencies:
+      solid-js: ^1.6.12
 
   '@szmarczak/http-timer@4.0.6':
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
@@ -3170,6 +3198,33 @@ snapshots:
     optional: true
 
   '@sindresorhus/is@4.6.0': {}
+
+  '@solid-primitives/event-listener@2.4.0(solid-js@1.9.5)':
+    dependencies:
+      '@solid-primitives/utils': 6.3.0(solid-js@1.9.5)
+      solid-js: 1.9.5
+
+  '@solid-primitives/resize-observer@2.1.0(solid-js@1.9.5)':
+    dependencies:
+      '@solid-primitives/event-listener': 2.4.0(solid-js@1.9.5)
+      '@solid-primitives/rootless': 1.5.0(solid-js@1.9.5)
+      '@solid-primitives/static-store': 0.1.0(solid-js@1.9.5)
+      '@solid-primitives/utils': 6.3.0(solid-js@1.9.5)
+      solid-js: 1.9.5
+
+  '@solid-primitives/rootless@1.5.0(solid-js@1.9.5)':
+    dependencies:
+      '@solid-primitives/utils': 6.3.0(solid-js@1.9.5)
+      solid-js: 1.9.5
+
+  '@solid-primitives/static-store@0.1.0(solid-js@1.9.5)':
+    dependencies:
+      '@solid-primitives/utils': 6.3.0(solid-js@1.9.5)
+      solid-js: 1.9.5
+
+  '@solid-primitives/utils@6.3.0(solid-js@1.9.5)':
+    dependencies:
+      solid-js: 1.9.5
 
   '@szmarczak/http-timer@4.0.6':
     dependencies:
