@@ -11,7 +11,7 @@ export default defineConfig({
   },
   plugins: [solid(), tailwindcss()],
   optimizeDeps: { exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/utils'] },
-  base: '/cine-cleaner/',
+  base: '/',
   build: {
     outDir: resolve(__dirname, '../dist'),
     emptyOutDir: true,
