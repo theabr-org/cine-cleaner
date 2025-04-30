@@ -11,9 +11,4 @@ export default defineConfig({
   },
   plugins: [solid(), tailwindcss()],
   optimizeDeps: { exclude: ['@ffmpeg/ffmpeg', '@ffmpeg/utils'] },
-  base: '/',
-  build: {
-    outDir: resolve(__dirname, '../dist'),
-    emptyOutDir: true,
-  },
 });

@@ -1,10 +1,6 @@
 # cine-cleaner
 
-An Electron application with Solid and TypeScript
-
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+An video editing application that allows you to redact unwanted parts of a video.
 
 ## Project Setup
 
@@ -18,17 +14,4 @@ $ pnpm install
 
 ```bash
 $ pnpm dev
-```
-
-### Build
-
-```bash
-# For windows
-$ pnpm build:win
-
-# For macOS
-$ pnpm build:mac
-
-# For Linux
-$ pnpm build:linux
 ```
