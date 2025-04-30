@@ -1,6 +1,6 @@
-import { useVideoData } from "@/context/useVideoData"
-import { Actions } from "@/utils/store"
-import { createResizeObserver } from "@solid-primitives/resize-observer"
+import { useVideoData } from '@/context/useVideoData';
+import { Actions } from '@/utils/store';
+import { createResizeObserver } from '@solid-primitives/resize-observer';
 import {
   Component,
   createSignal,
@@ -8,43 +8,44 @@ import {
   onCleanup,
   onMount,
   Show,
-} from "solid-js"
-import { Redaction } from "./Redaction"
-import { RedactionMover } from "./RedactionMover"
-import { RedactionResizer } from "./RedactionResizer"
-import { Pause, Play } from "lucide-solid"
-import { ExportVideoButton } from "./ExportVideoButton"
+} from 'solid-js';
+import { Redaction } from './Redaction';
+import { RedactionMover } from './RedactionMover';
+import { RedactionResizer } from './RedactionResizer';
+import { Pause, Play } from 'lucide-solid';
+import { ExportVideoButton } from './ExportVideoButton';
+import { Button } from './ui/button';
 
 export const Video: Component = () => {
-  const [videoState, dispatch] = useVideoData()
-  const [isPlaying, setIsPlaying] = createSignal(false)
-  let videoRef!: HTMLVideoElement
+  const [videoState, dispatch] = useVideoData();
+  const [isPlaying, setIsPlaying] = createSignal(false);
+  let videoRef!: HTMLVideoElement;
 
   const togglePlay = (): void => {
     if (isPlaying()) {
-      videoRef.pause()
+      videoRef.pause();
     } else {
-      videoRef.play()
+      videoRef.play();
     }
-    setIsPlaying((playing) => !playing)
-  }
+    setIsPlaying(playing => !playing);
+  };
 
   const onMouseLeave = (): void => {
-    dispatch({ type: Actions.MouseLeave })
-  }
+    dispatch({ type: Actions.MouseLeave });
+  };
 
   const startPlaying = (): void => {
-    setIsPlaying(true)
-  }
+    setIsPlaying(true);
+  };
   const stopPlaying = (): void => {
-    setIsPlaying(false)
-  }
+    setIsPlaying(false);
+  };
 
   onMount(() => {
-    videoRef.addEventListener("play", startPlaying)
-    videoRef.addEventListener("pause", stopPlaying)
-    videoRef.addEventListener("ended", stopPlaying)
-    window.addEventListener("mouseleave", onMouseLeave)
+    videoRef.addEventListener('play', startPlaying);
+    videoRef.addEventListener('pause', stopPlaying);
+    videoRef.addEventListener('ended', stopPlaying);
+    window.addEventListener('mouseleave', onMouseLeave);
 
     if (videoState.videoDimensions == null) {
       createResizeObserver(videoRef, ({ width, height }, el) => {
@@ -52,25 +53,25 @@ export const Video: Component = () => {
           dispatch({
             type: Actions.ResizeVideo,
             payload: { width, height },
-          })
+          });
         }
-      })
+      });
       dispatch({
         type: Actions.SetVideoDimensions,
         payload: {
           width: videoRef.clientWidth,
           height: videoRef.clientHeight,
         },
-      })
+      });
     }
-  })
+  });
 
   onCleanup(() => {
-    videoRef.removeEventListener("play", startPlaying)
-    videoRef.removeEventListener("pause", stopPlaying)
-    videoRef.removeEventListener("ended", stopPlaying)
-    window.removeEventListener("mouseleave", onMouseLeave)
-  })
+    videoRef.removeEventListener('play', startPlaying);
+    videoRef.removeEventListener('pause', stopPlaying);
+    videoRef.removeEventListener('ended', stopPlaying);
+    window.removeEventListener('mouseleave', onMouseLeave);
+  });
 
   return (
     <>
@@ -85,12 +86,12 @@ export const Video: Component = () => {
         <div
           class="absolute top-0 left-0"
           style={{
-            width: videoRef.clientWidth + "px",
-            height: videoRef.clientHeight + "px",
+            width: videoRef.clientWidth + 'px',
+            height: videoRef.clientHeight + 'px',
           }}
         >
           <For each={videoState.redactions}>
-            {(redaction) => (
+            {redaction => (
               <Redaction redaction={redaction}>
                 <Show when={!videoState.previewMode}>
                   <RedactionMover
@@ -108,21 +109,18 @@ export const Video: Component = () => {
         </div>
       </div>
       <div class="flex flex-0 justify-between items-center gap-4">
-        <button
-          class="px-4 py-2 bg-blue-500 w-[105px] text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-          onClick={togglePlay}
-        >
+        <Button class="w-[105px]" onClick={togglePlay}>
           {isPlaying() ? <Pause class="w-4 h-4" /> : <Play class="w-4 h-4" />}
-          {isPlaying() ? "Pause" : "Play"}
-        </button>
-        <button
-          class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-2"
+          {isPlaying() ? 'Pause' : 'Play'}
+        </Button>
+        <Button
+          variant="destructive"
           onClick={() => dispatch({ type: Actions.AddRedaction })}
         >
           Add Redaction
-        </button>
+        </Button>
         <ExportVideoButton videoRef={videoRef} />
       </div>
     </>
-  )
-}
+  );
+};

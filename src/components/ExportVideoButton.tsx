@@ -1,81 +1,82 @@
-import { useVideoData } from "@/context/useVideoData"
-import { processVideoWithFFMPEG } from "@/utils/processVideo"
-import { Download } from "lucide-solid"
-import { Component, createSignal, Show } from "solid-js"
+import { useVideoData } from '@/context/useVideoData';
+import { processVideoWithFFMPEG } from '@/utils/processVideo';
+import { Download } from 'lucide-solid';
+import { Component, createSignal, Show } from 'solid-js';
+import { Button } from './ui/button';
 
 export const ExportVideoButton: Component<{
-  videoRef: HTMLVideoElement
-}> = (props) => {
-  const [isProcessing, setIsProcessing] = createSignal(false)
-  const [processPercent, setProcessPercent] = createSignal(0)
-  const [store] = useVideoData()
+  videoRef: HTMLVideoElement;
+}> = props => {
+  const [isProcessing, setIsProcessing] = createSignal(false);
+  const [processPercent, setProcessPercent] = createSignal(0);
+  const [store] = useVideoData();
 
   const exportVideo = async (): Promise<void> => {
-    setIsProcessing(true)
-    const videoRealHeight = props.videoRef.videoHeight
-    const videoRealWidth = props.videoRef.videoWidth
+    setIsProcessing(true);
+    const videoRealHeight = props.videoRef.videoHeight;
+    const videoRealWidth = props.videoRef.videoWidth;
 
-    const videoContainer = props.videoRef.getBoundingClientRect()
-    const videoContainerHeight = videoContainer.height
-    const videoContainerWidth = videoContainer.width
+    const videoContainer = props.videoRef.getBoundingClientRect();
+    const videoContainerHeight = videoContainer.height;
+    const videoContainerWidth = videoContainer.width;
 
-    const heightRatio = videoRealHeight / videoContainerHeight
-    const widthRatio = videoRealWidth / videoContainerWidth
-    const redactions = store.redactions.map((redaction) => {
-      const x = redaction.x * widthRatio
-      const y = redaction.y * heightRatio
-      const width = redaction.width * widthRatio
-      const height = redaction.height * heightRatio
+    const heightRatio = videoRealHeight / videoContainerHeight;
+    const widthRatio = videoRealWidth / videoContainerWidth;
+    const redactions = store.redactions.map(redaction => {
+      const x = redaction.x * widthRatio;
+      const y = redaction.y * heightRatio;
+      const width = redaction.width * widthRatio;
+      const height = redaction.height * heightRatio;
       return {
         ...redaction,
         x,
         y,
         width,
         height,
-      }
-    })
+      };
+    });
     try {
       const result = await processVideoWithFFMPEG(
         store.videoSrc!,
         redactions,
-        (progress) => {
-          setProcessPercent(progress * 100)
+        progress => {
+          setProcessPercent(progress * 100);
         }
-      )
+      );
 
       if (!result.success) {
-        alert(`Error exporting video: ${result.message}`)
-        return
+        alert(`Error exporting video: ${result.message}`);
+        return;
       } else {
         // Download the file
-        const link = document.createElement("a")
-        link.href = result.videoUrl
-        link.download = "redacted-video.mp4"
-        link.click()
+        const link = document.createElement('a');
+        link.href = result.videoUrl;
+        link.download = 'redacted-video.mp4';
+        link.click();
       }
     } catch (error) {
-      console.error("Error processing video:", error)
+      console.error('Error processing video:', error);
     } finally {
-      setIsProcessing(false)
-      setProcessPercent(0)
+      setIsProcessing(false);
+      setProcessPercent(0);
     }
-  }
+  };
   return (
     <>
       <Show when={isProcessing()}>
         <ProgressModal percent={processPercent()} />
       </Show>
-      <button
+      <Button
+        variant="secondary"
         onClick={exportVideo}
         disabled={isProcessing()}
-        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center gap-2"
       >
         <Download class="w-4 h-4" />
         Export Video
-      </button>
+      </Button>
     </>
-  )
-}
+  );
+};
 
 const ProgressModal = (props: { percent: number }) => {
   return (
@@ -90,5 +91,5 @@ const ProgressModal = (props: { percent: number }) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
