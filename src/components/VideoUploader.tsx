@@ -1,6 +1,6 @@
 import { Upload, AlertCircle } from 'lucide-solid';
-import { Actions } from '@/utils/store'; // Import your store
-import { useVideoData } from '@/context/useVideoData'; // Import your context
+import { Actions } from '@/utils/store';
+import { useVideoData } from '@/context/useVideoData';
 import { createSignal, Show } from 'solid-js';
 import { Button } from './ui/button';
 
@@ -28,23 +28,34 @@ export const VideoUploader = () => {
     e.stopPropagation();
   };
 
-  const validateFile = (file: File): boolean => {
+  const validateFile = (file: File, target: HTMLInputElement): void => {
     // Check if it's a video file
-    if (!file.type.startsWith('video/')) {
-      setError('Please upload a video file only.');
-      return false;
+    if (file) {
+      // Create a video element to test playability
+      const video = document.createElement('video');
+      video.preload = 'metadata';
+
+      video.onloadedmetadata = function () {
+        // Video is playable in this browser
+        dispatch({
+          type: Actions.SetVideoSrc,
+          payload: URL.createObjectURL(file),
+        });
+      };
+
+      video.onerror = function () {
+        // Assumption is that error is due to Video format not supported
+        setError(
+          'The selected video format is not supported. Please choose an MP4 (H.264) or WebM (VP8/VP9) video.'
+        );
+        // Reset the file input
+        target.value = '';
+      };
+      video.src = URL.createObjectURL(file);
+
+      // Clear any previous errors
+      setError('');
     }
-
-    // Clear any previous errors
-    setError('');
-    return true;
-  };
-
-  const processVideoFile = (file: File): void => {
-    dispatch({
-      type: Actions.SetVideoSrc,
-      payload: URL.createObjectURL(file),
-    });
   };
 
   const handleDrop = (e: DragEvent): void => {
@@ -55,9 +66,7 @@ export const VideoUploader = () => {
     const files = e.dataTransfer?.files ?? [];
     if (files.length > 0) {
       const file = files[0];
-      if (validateFile(file)) {
-        processVideoFile(file);
-      }
+      validateFile(file, fileInputRef);
     }
   };
 
@@ -69,9 +78,7 @@ export const VideoUploader = () => {
     const files = e.target?.files;
     if (files && files.length > 0) {
       const file = files[0];
-      if (validateFile(file)) {
-        processVideoFile(file);
-      }
+      validateFile(file, e.target);
     }
   };
 
@@ -102,7 +109,7 @@ export const VideoUploader = () => {
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
-          accept="video/*"
+          accept="video/mp4,video/webm"
           class="hidden"
         />
 
@@ -120,13 +127,6 @@ export const VideoUploader = () => {
           </div>
         </div>
       </div>
-
-      {error() && (
-        <div class="mt-2 flex items-center text-sm text-red-500">
-          <AlertCircle class="w-4 h-4 mr-1" />
-          {error()}
-        </div>
-      )}
     </div>
   );
 };
