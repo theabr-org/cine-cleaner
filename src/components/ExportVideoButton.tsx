@@ -39,6 +39,7 @@ export const ExportVideoButton: Component<{
       const result = await processVideoWithFFMPEG(
         store.videoSrc!,
         redactions,
+        store.redactionColor,
         progress => {
           setProcessPercent(progress * 100);
         }

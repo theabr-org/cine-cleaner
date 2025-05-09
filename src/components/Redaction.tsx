@@ -1,32 +1,45 @@
-import { Component } from "solid-js"
-import { RedactionMover } from "./RedactionMover"
-import { RedactionResizer } from "./RedactionResizer"
-import type { Redaction as TRedaction } from "@/utils/store"
-import { useVideoData } from "@/context/useVideoData"
+import { Component } from 'solid-js';
+import { Actions, type Redaction as TRedaction } from '@/utils/store';
+import { useVideoData } from '@/context/useVideoData';
+import { Resizeable } from './ui/resizeable';
 
 type RedactionProps = {
-  children?: ReturnType<typeof RedactionMover | typeof RedactionResizer>
-  redaction: TRedaction
-}
-export const Redaction: Component<RedactionProps> = (props) => {
-  const [store] = useVideoData()
+  redaction: TRedaction;
+};
+export const Redaction: Component<RedactionProps> = props => {
+  const [store, dispatch] = useVideoData();
+
   return (
-    <div
-      id={new Date().toISOString()}
-      class="absolute  z-10"
-      classList={{
-        "pointer-events-none": store.previewMode,
-        "bg-red-200 border-2 border-red-500 opacity-50": !store.previewMode,
-        "bg-[black]": store.previewMode,
+    <Resizeable
+      redaction={props.redaction}
+      onPositionChange={newPosition => {
+        dispatch({
+          type: Actions.SetRedactionPosition,
+          payload: {
+            key: props.redaction.key,
+            x: newPosition.x,
+            y: newPosition.y,
+          },
+        });
       }}
-      style={{
-        width: `${props.redaction.width}px`,
-        height: `${props.redaction.height}px`,
-        left: `${props.redaction.x}px`,
-        top: `${props.redaction.y}px`,
+      onDimensionChange={(newDim, newPosition) => {
+        dispatch({
+          type: Actions.SetRedactionSize,
+          payload: {
+            key: props.redaction.key,
+            width: newDim.width,
+            height: newDim.height,
+            x: newPosition.x,
+            y: newPosition.y,
+          },
+        });
       }}
-    >
-      {props.children}
-    </div>
-  )
-}
+      bounds={{
+        width: store.videoDimensions!.width,
+        height: store.videoDimensions!.height,
+      }}
+      backgroundColor={store.redactionColor}
+      previewMode={store.previewMode}
+    />
+  );
+};

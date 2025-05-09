@@ -1,20 +1,12 @@
 import { useVideoData } from '@/context/useVideoData';
 import { Actions } from '@/utils/store';
 import { createResizeObserver } from '@solid-primitives/resize-observer';
-import {
-  Component,
-  createSignal,
-  For,
-  onCleanup,
-  onMount,
-  Show,
-} from 'solid-js';
+import { Component, createSignal, For, onCleanup, onMount } from 'solid-js';
 import { Redaction } from './Redaction';
-import { RedactionMover } from './RedactionMover';
-import { RedactionResizer } from './RedactionResizer';
 import { Pause, Play } from 'lucide-solid';
 import { ExportVideoButton } from './ExportVideoButton';
 import { Button } from './ui/button';
+import { ColorPicker } from './ui/color-picker';
 
 export const Video: Component = () => {
   const [videoState, dispatch] = useVideoData();
@@ -30,10 +22,6 @@ export const Video: Component = () => {
     setIsPlaying(playing => !playing);
   };
 
-  const onMouseLeave = (): void => {
-    dispatch({ type: Actions.MouseLeave });
-  };
-
   const startPlaying = (): void => {
     setIsPlaying(true);
   };
@@ -45,7 +33,6 @@ export const Video: Component = () => {
     videoRef.addEventListener('play', startPlaying);
     videoRef.addEventListener('pause', stopPlaying);
     videoRef.addEventListener('ended', stopPlaying);
-    window.addEventListener('mouseleave', onMouseLeave);
 
     if (videoState.videoDimensions == null) {
       createResizeObserver(videoRef, ({ width, height }, el) => {
@@ -70,15 +57,44 @@ export const Video: Component = () => {
     videoRef.removeEventListener('play', startPlaying);
     videoRef.removeEventListener('pause', stopPlaying);
     videoRef.removeEventListener('ended', stopPlaying);
-    window.removeEventListener('mouseleave', onMouseLeave);
   });
 
   return (
     <>
-      <div
-        onMouseLeave={onMouseLeave}
-        class="flex-1 relative min-h-0 max-h-full h-full"
-      >
+      <section class="w-full">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center justify-end">
+            <span class="mr-2 text-sm text-gray-600">Set Redaction Color:</span>
+            <ColorPicker
+              value={videoState.redactionColor}
+              onChange={color =>
+                dispatch({
+                  type: Actions.SetRedactionColor,
+                  payload: color,
+                })
+              }
+            />
+          </div>
+          <div class="flex items-center justify-end">
+            <span class="mr-2 text-sm text-gray-600">Preview Mode:</span>
+            <button
+              onClick={() => dispatch({ type: Actions.TogglePreviewMode })}
+              class={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors focus:outline-none ${
+                videoState.previewMode ? 'bg-blue-500' : 'bg-gray-300'
+              }`}
+              aria-pressed={videoState.previewMode}
+              aria-label="Toggle preview mode"
+            >
+              <span
+                class={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform ${
+                  videoState.previewMode ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+      </section>
+      <div class="flex-1 relative min-h-0 max-h-full h-full">
         <video ref={videoRef!} class="pointer-events-none h-auto max-h-full">
           <source src={videoState.videoSrc!} type="video/mp4" />
           Your browser does not support the video tag.
@@ -91,20 +107,7 @@ export const Video: Component = () => {
           }}
         >
           <For each={videoState.redactions}>
-            {redaction => (
-              <Redaction redaction={redaction}>
-                <Show when={!videoState.previewMode}>
-                  <RedactionMover
-                    redaction={redaction}
-                    maxCoords={{
-                      x: videoRef.clientWidth,
-                      y: videoRef.clientHeight,
-                    }}
-                  />
-                  <RedactionResizer redaction={redaction} />
-                </Show>
-              </Redaction>
-            )}
+            {redaction => <Redaction redaction={redaction}></Redaction>}
           </For>
         </div>
       </div>
