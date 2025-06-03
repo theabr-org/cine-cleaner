@@ -49,6 +49,7 @@ type ResizableProps = VariantProps<typeof resizeableVariants> & {
   redaction: Redaction;
   onPositionChange: (position: Position) => void;
   onDimensionChange: (dimensions: Dimensions, position: Position) => void;
+  onRemove: () => void;
   bounds: { width: number; height: number };
 };
 
@@ -159,8 +160,8 @@ export const Resizeable: Component<ResizableProps> = props => {
     }
 
     // Ensure minimum dimensions
-    newWidth = Math.max(20, newWidth);
-    newHeight = Math.max(20, newHeight);
+    newWidth = Math.max(30, newWidth);
+    newHeight = Math.max(30, newHeight);
     const position = { x: newX, y: newY };
     const boundary = getBoundary(position, { width: deltaX, height: deltaY });
     if (boundary && boundary !== onBoundary()) {
@@ -412,6 +413,8 @@ export const Resizeable: Component<ResizableProps> = props => {
     );
   };
 
+  const [isHovered, setIsHovered] = createSignal(false);
+
   return (
     <div
       ref={elementRef}
@@ -427,6 +430,8 @@ export const Resizeable: Component<ResizableProps> = props => {
         width: `${dimensions().width}px`,
         height: `${dimensions().height}px`,
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       onMouseDown={e => handleMouseDown(e)}
     >
       {/* Top handle */}
@@ -476,6 +481,22 @@ export const Resizeable: Component<ResizableProps> = props => {
         class={getClassNames('bottomLeft')}
         onMouseDown={e => handleMouseDown(e, 'bottomLeft')}
       />
+
+      <button
+        class="absolute top-1 right-1 transition-opacity duration-200 cursor-pointer"
+        classList={{
+          'opacity-100': isHovered(),
+          'opacity-0': !isHovered(),
+        }}
+        onClick={e => {
+          e.stopPropagation();
+          props.onRemove();
+        }}
+      >
+        <div class="text-xs w-5 h-5 bg-red-500 text-white rounded-full display-flex items-center justify-center">
+          &times;
+        </div>
+      </button>
     </div>
   );
 };

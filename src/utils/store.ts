@@ -24,6 +24,7 @@ export enum Actions {
   SetRedactionColor = 'SET_REDACTION_COLOR',
   SetVideoSrc = 'SET_VIDEO_SRC',
   AddRedaction = 'ADD_REDACTION',
+  RemoveRedaction = 'REMOVE_REDACTION',
   SetRedactionSize = 'SET_REDACTION_SIZE',
   SetRedactionPosition = 'SET_REDACTION_POSITION',
   ResizeVideo = 'RESIZE_VIDEO',
@@ -40,6 +41,10 @@ export type VideoAction =
     }
   | {
       type: Actions.AddRedaction;
+    }
+  | {
+      type: Actions.RemoveRedaction;
+      payload: string; // key of the redaction to remove
     }
   | {
       type: Actions.SetRedactionSize;
@@ -96,12 +101,15 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
           key: new Date().toISOString(),
           x: Math.random() * 100,
           y: Math.random() * 100,
-          width: 100,
-          height: 20,
+          width: 120,
+          height: 30,
         },
       ],
     }))
-
+    .with({ type: Actions.RemoveRedaction }, ({ payload }) => ({
+      ...state,
+      redactions: state.redactions.filter(r => r.key !== payload),
+    }))
     .with({ type: Actions.SetRedactionPosition }, ({ payload }) => ({
       ...state,
       redactions: state.redactions.map(r =>

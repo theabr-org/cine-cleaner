@@ -34,6 +34,12 @@ export const Redaction: Component<RedactionProps> = props => {
           },
         });
       }}
+      onRemove={() => {
+        dispatch({
+          type: Actions.RemoveRedaction,
+          payload: props.redaction.key,
+        });
+      }}
       bounds={{
         width: store.videoDimensions!.width,
         height: store.videoDimensions!.height,
