@@ -63,6 +63,8 @@ type ResizeDirection =
   | 'bottomLeft'
   | 'bottomRight';
 
+const MIN_DIMENSION = 30;
+
 export const Resizeable: Component<ResizableProps> = props => {
   const [isDragging, setIsDragging] = createSignal(false);
   const [isResizing, setIsResizing] = createSignal(false);
@@ -160,8 +162,9 @@ export const Resizeable: Component<ResizableProps> = props => {
     }
 
     // Ensure minimum dimensions
-    newWidth = Math.max(30, newWidth);
-    newHeight = Math.max(30, newHeight);
+    newWidth = Math.max(MIN_DIMENSION, newWidth);
+    newHeight = Math.max(MIN_DIMENSION, newHeight);
+
     const position = { x: newX, y: newY };
     const boundary = getBoundary(position, { width: deltaX, height: deltaY });
     if (boundary && boundary !== onBoundary()) {
@@ -335,16 +338,16 @@ export const Resizeable: Component<ResizableProps> = props => {
       if (direction.includes('right')) {
         newWidth = dimensions().width + dx;
       } else if (direction.includes('left')) {
-        newWidth = dimensions().width - dx;
-        newX = position().x + dx;
+        newWidth = Math.max(MIN_DIMENSION, dimensions().width - dx);
+        newX = position().x - (newWidth - dimensions().width);
       }
 
       // Handle vertical resizing
       if (direction.includes('bottom')) {
         newHeight = dimensions().height + dy;
       } else if (direction.includes('top')) {
-        newHeight = dimensions().height - dy;
-        newY = position().y + dy;
+        newHeight = Math.max(MIN_DIMENSION, dimensions().height - dy);
+        newY = position().y - (newHeight - dimensions().height);
       }
 
       const { dim, pos } = constrainDimensions(
