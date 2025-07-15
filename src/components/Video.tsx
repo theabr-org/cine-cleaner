@@ -231,13 +231,13 @@ const VideoTimeControls: Component<{ duration: number }> = props => {
         }}
       />
       <div
-        class="rounded-full h-4 w-4 top-[-4px] absolute"
+        class="rounded-full h-4 w-4 top-[-4px] absolute cursor-pointer"
         classList={{ ['bg-red-500']: tooLong(), ['bg-green-500']: !tooLong() }}
         style={{ left: `calc(${leftPercentage()}% - 8px)` }}
         onMouseDown={() => handleMouseDown(true)}
       />
       <div
-        class="rounded-full h-4 w-4 top-[-4px] absolute"
+        class="rounded-full h-4 w-4 top-[-4px] absolute cursor-pointer"
         classList={{ ['bg-red-500']: tooLong(), ['bg-green-500']: !tooLong() }}
         style={{ left: `calc(${rightPercentage()}% - 8px)` }}
         onMouseDown={() => handleMouseDown(false)}
