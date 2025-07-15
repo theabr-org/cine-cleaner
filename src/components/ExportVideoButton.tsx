@@ -1,8 +1,8 @@
 import { useVideoData } from '@/context/useVideoData';
-import { processVideoWithFFMPEG } from '@/utils/processVideo';
 import { Download } from 'lucide-solid';
 import { Component, createSignal, Show } from 'solid-js';
 import { Button } from './ui/button';
+import { applyVideoEdits } from '@/utils/applyVideoEdits';
 
 export const ExportVideoButton: Component<{
   videoRef: HTMLVideoElement;
@@ -13,50 +13,33 @@ export const ExportVideoButton: Component<{
 
   const exportVideo = async (): Promise<void> => {
     setIsProcessing(true);
-    const videoRealHeight = props.videoRef.videoHeight;
-    const videoRealWidth = props.videoRef.videoWidth;
 
-    const videoContainer = props.videoRef.getBoundingClientRect();
-    const videoContainerHeight = videoContainer.height;
-    const videoContainerWidth = videoContainer.width;
-
-    const heightRatio = videoRealHeight / videoContainerHeight;
-    const widthRatio = videoRealWidth / videoContainerWidth;
-    const redactions = store.redactions.map(redaction => {
-      const x = redaction.x * widthRatio;
-      const y = redaction.y * heightRatio;
-      const width = redaction.width * widthRatio;
-      const height = redaction.height * heightRatio;
-      return {
-        ...redaction,
-        x,
-        y,
-        width,
-        height,
-      };
-    });
     try {
-      const result = await processVideoWithFFMPEG(
-        store.videoSrc!,
-        redactions,
-        store.redactionColor,
-        progress => {
-          setProcessPercent(progress * 100);
-        }
-      );
+      const result = await applyVideoEdits({
+        objectUrl: store.videoSrc!,
+        redactions: store.redactions,
+        startTime: store.startTime,
+        endTime: store.endTime,
+        redactionColor: store.redactionColor,
+        container: {
+          width: props.videoRef.clientWidth,
+          height: props.videoRef.clientHeight,
+        },
+        onProgress: setProcessPercent,
+      });
 
       if (!result.success) {
         alert(`Error exporting video: ${result.message}`);
         return;
-      } else {
-        // Download the file
-        const link = document.createElement('a');
-        link.href = result.videoUrl;
-        link.download = 'redacted-video.mp4';
-        link.click();
       }
+
+      // Download the file
+      const link = document.createElement('a');
+      link.href = result.objectUrl;
+      link.download = 'redacted-video.mp4';
+      link.click();
     } catch (error) {
-      console.error('Error processing video:', error);
+      console.error('Error applying edits to video:', error);
     } finally {
       setIsProcessing(false);
       setProcessPercent(0);
@@ -70,7 +53,12 @@ export const ExportVideoButton: Component<{
       <Button
         variant="secondary"
         onClick={exportVideo}
-        disabled={isProcessing()}
+        title={
+          store.endTime - store.startTime > 10
+            ? 'Exporting video longer than 10 seconds is not supported'
+            : 'Export the video with redactions applied'
+        }
+        disabled={isProcessing() || store.endTime - store.startTime > 10}
       >
         <Download class="w-4 h-4" />
         Export Video

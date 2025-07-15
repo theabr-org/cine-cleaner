@@ -13,6 +13,8 @@ export const VideoProvider: ParentComponent = props => {
     previewMode: false,
     videoDimensions: null,
     redactionColor: 'black',
+    startTime: 0,
+    endTime: 0,
   });
   return (
     <VideoContext.Provider value={store}>

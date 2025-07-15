@@ -191,7 +191,7 @@ const InfoModal = (props: { onClose: () => void }) => {
             class="text-blue-500 underline"
             rel="noopener noreferrer"
           >
-            Cine Cleaner GitHub
+            Cine Editor GitHub
           </a>
           .
         </p>

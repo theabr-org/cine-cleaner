@@ -13,10 +13,14 @@ export type VideoState = {
   videoDimensions: {
     width: number;
     height: number;
+    videoHeight: number;
+    videoWidth: number;
   } | null;
   previewMode: boolean;
   redactionColor: 'white' | 'black';
   redactions: Array<Redaction>;
+  startTime: number;
+  endTime: number;
 };
 
 export enum Actions {
@@ -29,6 +33,8 @@ export enum Actions {
   SetRedactionPosition = 'SET_REDACTION_POSITION',
   ResizeVideo = 'RESIZE_VIDEO',
   SetVideoDimensions = 'SET_VIDEO_DIMENSIONS',
+  SetStartTime = 'SET_START_TIME',
+  SetEndTime = 'SET_END_TIME',
 }
 
 export type VideoAction =
@@ -76,11 +82,22 @@ export type VideoAction =
       payload: {
         width: number;
         height: number;
+        videoWidth: number;
+        videoHeight: number;
+        duration: number;
       };
     }
   | {
       type: Actions.SetRedactionColor;
       payload: 'white' | 'black';
+    }
+  | {
+      type: Actions.SetStartTime;
+      payload: number;
+    }
+  | {
+      type: Actions.SetEndTime;
+      payload: number;
     };
 
 export const reducer = (state: VideoState, action: VideoAction): VideoState =>
@@ -156,6 +173,7 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
       return {
         ...state,
         videoDimensions: {
+          ...videoDimensions,
           width: payload.width,
           height: payload.height,
         },
@@ -165,12 +183,23 @@ export const reducer = (state: VideoState, action: VideoAction): VideoState =>
     .with({ type: Actions.SetVideoDimensions }, ({ payload }) => ({
       ...state,
       videoDimensions: {
+        videoWidth: payload.videoWidth,
+        videoHeight: payload.videoHeight,
         width: payload.width,
         height: payload.height,
       },
+      endTime: payload.duration,
     }))
     .with({ type: Actions.SetRedactionColor }, ({ payload }) => ({
       ...state,
       redactionColor: payload,
+    }))
+    .with({ type: Actions.SetStartTime }, ({ payload }) => ({
+      ...state,
+      startTime: payload,
+    }))
+    .with({ type: Actions.SetEndTime }, ({ payload }) => ({
+      ...state,
+      endTime: payload,
     }))
     .exhaustive();
